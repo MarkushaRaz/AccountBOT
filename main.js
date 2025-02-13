@@ -3,6 +3,8 @@ const TelegramBot = require('node-telegram-bot-api');
 const token = '7242814639:AAEF-o5EP-IQe7IiWUpVC42fUoh0LBggHmM';
 const bot = new TelegramBot(token, {polling:true});
 
+let Data = new Map();
+
 const i = 7339807316;
 
 let userid;
@@ -10,6 +12,14 @@ let username;
 
 let TimeMessage1;
 let TimeMessage2;
+
+function SaveData(userid, data) {
+    Data.set(userid, data);
+}
+
+function GetData(userid) {
+    return Data.get(userid);
+}
 
 bot.onText(/\/start/, (msg) => {
     bot.sendMessage(msg.chat.id, `Привет, ${msg.from.first_name} ${msg.from.last_name} (@${msg.from.username}).\nЧтобы начать чат со мной, отправь команду /dialog.\n`);
@@ -28,8 +38,16 @@ bot.onText(/\/dialog/, (msg) => {
     userid = msg.chat.id;
     username = msg.from.username;
 
+    if (GetData() === 'Dialog: true') {
+        bot.sendMessage(userid, '<b>Ошибка. Запрос уже отправлен.</b>', {parse_mode:'HTML'});
+        return;
+    }
+    else {
+        SaveData(userid, 'Dialog: true');
+    }
+
     if (msg.chat.id === i) {
-        bot.sendMessage(i, '<b>Ошибка</b>', {parse_mode:'HTML'});
+        bot.sendMessage(i, '<b>Ошибка. Нельзя написать самому себе.</b>', {parse_mode:'HTML'});
         return;
     }
 
