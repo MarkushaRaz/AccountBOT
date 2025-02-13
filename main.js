@@ -14,12 +14,12 @@ let username;
 let TimeMessage1;
 let TimeMessage2;
 
-function SaveData(userid, data) {
-    Data.set(userid, data);
+function SaveData(userId, data) {
+    Data.set(userId, data);
 }
 
-function GetData(userid) {
-    return Data.get(userid);
+function GetData(userId) {
+    return Data.get(userId);
 }
 
 bot.onText(/\/start/, (msg) => {
@@ -39,8 +39,8 @@ bot.onText(/\/dialog/, (msg) => {
     userid = msg.chat.id;
     username = msg.from.username;
 
-    TimeData = GetData();
-
+    TimeData = GetData(userid);
+        
     if (TimeData === 'Dialog: true') {
         bot.sendMessage(userid, '<b>Ошибка. Запрос уже отправлен.</b>', {parse_mode:'HTML'});
         return;
@@ -65,8 +65,22 @@ bot.onText(/\/dialog/, (msg) => {
             bot.deleteMessage(i, TimeMessage1);
             bot.deleteMessage(userid, TimeMessage2);
 
-            bot.sendMessage(i, `Начало чата с @${username}.`);
-            bot.sendMessage(userid, `Начало чата с пользователем.`);
+            bot.sendMessage(i, `<b>НАЧАЛО ЧАТА С @${username}.</b>`, {parse_mode:'HTML'})
+                .then((sentMessage) => bot.pinChatMessage(i, sentMessage.message_id));
+            
+            bot.sendMessage(userid, `Начало чата с пользователем.`)
+                .then((sentMessage) => bot.pinChatMessage(userid, sentMessage.message_id));
+
+            bot.on('message', (msg) => {
+                if (msg.chat.id === i) {
+                    bot.sendMessage(userid, msg.text);
+                }
+                else {
+                    bot.sendMessage(i, msg.text);
+                }
+            });
+
+            return;
         }
         else {
             bot.deleteMessage(i, TimeMessage1);
@@ -74,15 +88,7 @@ bot.onText(/\/dialog/, (msg) => {
 
             bot.sendMessage(i, `Запрос на создание чата c @${username} отклонён.`);
             bot.sendMessage(userid, `Запрос на создание чата с пользователем отклонён.`);
-        }
-    });
-
-    bot.on('message', (msg) => {
-        if (msg.chat.id === i) {
-            bot.sendMessage(userid, msg.text);
-        }
-        else {
-            bot.sendMessage(i, msg.text);
+            return;
         }
     });
 });
