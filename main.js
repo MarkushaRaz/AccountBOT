@@ -4,6 +4,7 @@ const token = '7242814639:AAEF-o5EP-IQe7IiWUpVC42fUoh0LBggHmM';
 const bot = new TelegramBot(token, {polling:true});
 
 let Data = new Map();
+let TimeData;
 
 const i = 7339807316;
 
@@ -38,7 +39,9 @@ bot.onText(/\/dialog/, (msg) => {
     userid = msg.chat.id;
     username = msg.from.username;
 
-    if (GetData() === 'Dialog: true') {
+    TimeData = GetData();
+
+    if (TimeData === 'Dialog: true') {
         bot.sendMessage(userid, '<b>Ошибка. Запрос уже отправлен.</b>', {parse_mode:'HTML'});
         return;
     }
