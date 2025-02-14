@@ -6,6 +6,8 @@ const bot = new TelegramBot(token, {polling:true});
 let Data = new Map();
 let TimeData;
 
+let SpamData;
+
 const i = 7339807316;
 
 let userid;
@@ -13,6 +15,17 @@ let username;
 
 let TimeMessage1;
 let TimeMessage2;
+
+// function AntiSpam(chatId) {
+//     if (SpamData >= 10) {
+//         blacklist.add(chatId);
+//         setTimeout(ClearSpam(chatId), 18000000);
+//     }
+// }
+
+// function ClearSpam(chatId) {
+//     return UnBlock;
+// }
 
 function SaveData(userId, data) {
     Data.set(userId, data);
@@ -92,5 +105,9 @@ bot.onText(/\/dialog/, (msg) => {
         }
     });
 });
+
+// bot.on('message', (msg) => {
+//     setTimeout(AntiSpam(msg.chat.id), 10000);
+// });
 
 console.log('> Successful start');
