@@ -3,29 +3,21 @@ const TelegramBot = require('node-telegram-bot-api');
 const token = '7242814639:AAEF-o5EP-IQe7IiWUpVC42fUoh0LBggHmM';
 const bot = new TelegramBot(token, {polling:true});
 
+let Blacklist = new Set();
+
 let Data = new Map();
 let TimeData;
-
-let SpamData;
 
 const i = 7339807316;
 
 let userid;
 let username;
 
+let Spamid;
+let SpamData = 0;
+
 let TimeMessage1;
 let TimeMessage2;
-
-// function AntiSpam(chatId) {
-//     if (SpamData >= 10) {
-//         blacklist.add(chatId);
-//         setTimeout(ClearSpam(chatId), 18000000);
-//     }
-// }
-
-// function ClearSpam(chatId) {
-//     return UnBlock;
-// }
 
 function SaveData(userId, data) {
     Data.set(userId, data);
@@ -106,8 +98,25 @@ bot.onText(/\/dialog/, (msg) => {
     });
 });
 
-// bot.on('message', (msg) => {
-//     setTimeout(AntiSpam(msg.chat.id), 10000);
-// });
+bot.on('message', (msg) => {
+    SpamData++;
+    Spamid = msg.chat.id;
+});
+
+setInterval(() => {
+    if (SpamData >= 10) {
+        bot.sendMessage(Spamid, '<i><b>Вы заблокированы на 10 часов.</b> Пожалуйста, не нарушайте больше правила.</i>', {parse_mode:'HTML'});
+        Blacklist.has(Spamid);
+        
+        console.log(Blacklist);
+
+        setTimeout(() =>{
+            Blacklist.delete(Spamid);
+            bot.sendMessage(Spamid, '<i><b>Вы разблокированы.</b> Пожалуйста, не нарушайте больше правила.</i>', {parse_mode:'HTML'});
+        }, 21600000);
+
+        SpamData = 0;
+    }
+}, 10000);
 
 console.log('> Successful start');
